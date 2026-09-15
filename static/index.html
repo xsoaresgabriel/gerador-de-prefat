@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pré-Faturas — Gestão de Fretes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%231f5f8b'/%3E%3Crect x='4' y='4.5' width='8' height='1.4' fill='white'/%3E%3Crect x='4' y='7.3' width='8' height='1.4' fill='white'/%3E%3Crect x='4' y='10.1' width='5' height='1.4' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">
+    <span class="brand-bar" aria-hidden="true"></span>
+    <span class="brand-name">Gestão de Fretes</span>
+    <span class="brand-env">Faturamento</span>
+  </div>
+  <div class="topbar-right">
+    <span class="user">TI · Coopertruni</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Menu do módulo">
+    <span class="nav-item is-disabled" aria-disabled="true">Início</span>
+    <div class="nav-group">Faturamento</div>
+    <a class="nav-item is-active" href="#" data-nav="prefaturas" aria-current="page">Pré-Faturas</a>
+    <a class="nav-item" href="#" data-nav="emitidas">Faturas emitidas</a>
+    <div class="nav-group">Relatórios</div>
+    <span class="nav-item is-disabled" aria-disabled="true" title="Sem acesso neste ambiente">Exportações</span>
+  </nav>
+
+  <main class="content">
+    <div class="module-head">
+      <div class="module-head-text">
+        <h1 id="mhTitle">Pré-Faturas</h1>
+        <p id="mhSub">Importação e conferência de pré-faturas exportadas do GKO Frete (interface INTPROCEDAPREFAT).</p>
+      </div>
+      <div class="module-head-actions" id="mhActions">
+        <button type="button" class="btn btn-primary" id="btnImportar">Importar arquivos</button>
+        <input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
+      </div>
+    </div>
+
+    <div id="banner" class="banner-slot" aria-live="polite"></div>
+    <div id="panel"></div>
+  </main>
+</div>
+
+<div id="modalRoot" class="modal-root" hidden>
+  <div class="modal-backdrop" data-close="1"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1">
+    <div class="modal-head">
+      <h2 id="modalTitulo">Registros do arquivo</h2>
+      <button type="button" class="modal-x" id="modalFechar" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" data-close="1">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/cadastros.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
