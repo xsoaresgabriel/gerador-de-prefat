@@ -1,0 +1,18 @@
+# Banco de dados local (pré-faturas + faturas emitidas)
+dados/
+*.tmp
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Arquivos de pré-fatura de teste
+*.txt
+!requirements*.txt
+
+# Sistema operacional / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
