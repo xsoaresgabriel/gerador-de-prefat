@@ -300,8 +300,10 @@ def parse_text(nome_arquivo, conteudo):
 
 
 if __name__ == "__main__":
-    import sys, json
+    import os
+    import sys
+    import json
     for caminho in sys.argv[1:]:
         with open(caminho, "r", encoding="latin-1") as fh:
-            data = parse_text(caminho.split("/")[-1], fh.read())
+            data = parse_text(os.path.basename(caminho), fh.read())
         print(json.dumps(data, ensure_ascii=False, indent=2))
