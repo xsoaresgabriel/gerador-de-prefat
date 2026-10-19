@@ -16,7 +16,6 @@ import json
 import mimetypes
 import os
 import re
-import sys
 import threading
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -191,8 +190,12 @@ def fatura_emitir(payload):
             fat["numero"] = _formatar_numero(seq, fat.get("emissao", ""))
             fat["seq"] = seq
             data["contador"] = seq + 1
+        # Preserva a data da primeira emissão em re-emissões (ao salvar
+        # alterações numa fatura já emitida).
+        ja_emitida = fat.get("status") == "emitida" and fat.get("emitida_em")
         fat["status"] = "emitida"
-        fat["emitida_em"] = _agora()
+        if not ja_emitida:
+            fat["emitida_em"] = _agora()
         data["faturas"][chave] = fat
         _store_save(data)
         return fat
@@ -218,7 +221,13 @@ def fatura_excluir(payload):
 
 def _read_static(rel):
     caminho = os.path.normpath(os.path.join(STATIC_DIR, rel.lstrip("/")))
-    if not caminho.startswith(STATIC_DIR):
+    # commonpath é mais robusto que startswith: evita que "/.../staticX/..."
+    # passe quando STATIC_DIR termina em "/static".
+    try:
+        if os.path.commonpath([STATIC_DIR, caminho]) != STATIC_DIR:
+            return None, None
+    except ValueError:
+        # caminhos em drives diferentes no Windows
         return None, None
     if not os.path.isfile(caminho):
         return None, None
@@ -281,8 +290,10 @@ class Handler(BaseHTTPRequestHandler):
             tamanho = int(self.headers.get("Content-Length", "0"))
         except ValueError:
             tamanho = 0
-        if tamanho <= 0 or tamanho > MAX_BODY:
-            return None, (413, "Corpo vazio ou grande demais.")
+        if tamanho <= 0:
+            return None, (400, "Corpo vazio.")
+        if tamanho > MAX_BODY:
+            return None, (413, "Corpo grande demais.")
         raw = self.rfile.read(tamanho)
         try:
             return json.loads(raw.decode("utf-8")), None
@@ -300,8 +311,14 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/importar":
+            arquivos = payload.get("arquivos")
+            if not isinstance(arquivos, list):
+                self._json({"erro": "Formato invalido: 'arquivos' deve ser uma lista."}, 400)
+                return
             resultados = []
-            for arq in payload.get("arquivos", []):
+            for arq in arquivos:
+                if not isinstance(arq, dict):
+                    continue
                 nome = str(arq.get("nome", "arquivo.txt"))
                 conteudo = arq.get("conteudo", "")
                 try:
